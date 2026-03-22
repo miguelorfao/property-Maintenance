@@ -1,53 +1,90 @@
-# Getting Started with Create React App
+# Maintenance Management App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React-based application for managing maintenance of holiday flats and shops. Built with modern web technologies for optimal performance and user experience.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Property Management**: Add, view, and delete holiday flats and shops
+- **Issue Tracking**: Report and track maintenance issues with status updates
+- **Dashboard**: Overview of properties and issues with statistics
+- **Firebase Integration**: Cloud-based data persistence with offline fallbacks
+- **Mobile Responsive**: Optimized for desktop and mobile devices
+- **Modern Build**: Powered by Vite for fast development and builds
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: React 19 with hooks
+- **UI Library**: Material-UI (MUI) components
+- **Build Tool**: Vite 5
+- **Database**: Firebase Firestore
+- **Testing**: Jest
+- **Styling**: Material-UI theme system
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js 20.10 or higher
+- npm or yarn
+- Firebase project (for data persistence)
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+```bash
+git clone https://github.com/miguelorfao/property-Maintenance.git
+cd property-Maintenance
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Install dependencies:
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Set up Firebase (optional):
+   - Create a Firebase project at https://console.firebase.google.com/
+   - Enable Firestore database
+   - Copy your Firebase config to `src/firebase.js`
 
-### `npm run eject`
+4. Start the development server:
+```bash
+npm run dev
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The app will be available at `http://localhost:5176`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Available Scripts
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm test` - Run tests
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Project Structure
 
-## Learn More
+```
+src/
+├── components/
+│   ├── Dashboard.jsx          # Main dashboard with statistics
+│   ├── PropertyList.jsx       # List of properties with delete functionality
+│   ├── IssueList.jsx          # List of issues with status updates
+│   ├── AddPropertyForm.jsx    # Form to add new properties
+│   └── AddIssueForm.jsx       # Form to report new issues
+├── App.jsx                    # Main application component
+├── firebase.js                # Firebase configuration
+└── index.jsx                  # Application entry point
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Deployment
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The app can be deployed to any static hosting service like Vercel, Netlify, or GitHub Pages.
 
-### Code Splitting
+To build for production:
+```bash
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The built files will be in the `dist/` directory.(https://facebook.github.io/create-react-app/docs/code-splitting)
 
 ### Analyzing the Bundle Size
 
