@@ -17,6 +17,12 @@ const IssueList = ({ issues, properties, onUpdateStatus, onDelete }) => {
   const getPropertyName = (id) =>
     properties.find((p) => p.id === id)?.name || "Unknown";
 
+  const formatDateTime = (dateTime) => {
+    if (!dateTime) return "-";
+    const parsed = new Date(dateTime);
+    return isNaN(parsed) ? "-" : parsed.toLocaleString();
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case "open":
@@ -40,7 +46,22 @@ const IssueList = ({ issues, properties, onUpdateStatus, onDelete }) => {
           <ListItem key={issue.id} divider>
             <ListItemText
               primary={issue.description}
-              secondary={`Property: ${getPropertyName(issue.propertyId)} - Priority: ${issue.priority}`}
+              secondary={
+                <>
+                  <div>
+                    Property: {getPropertyName(issue.propertyId)} - Priority:{" "}
+                    {issue.priority}
+                  </div>
+                  <div>
+                    Check-in: {formatDateTime(issue.checkInTime)} | Check-out:{" "}
+                    {formatDateTime(issue.checkOutTime)}
+                  </div>
+                  <div>
+                    Hours Worked:{" "}
+                    {issue.hoursWorked != null ? issue.hoursWorked : "-"}
+                  </div>
+                </>
+              }
             />
             <Chip label={issue.status} color={getStatusColor(issue.status)} />
             <FormControl size="small" sx={{ ml: 2, minWidth: 120 }}>

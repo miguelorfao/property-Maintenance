@@ -15,6 +15,18 @@ const Dashboard = ({ properties, issues }) => {
   const flats = properties.filter((p) => p.type === "flat").length;
   const shops = properties.filter((p) => p.type === "shop").length;
 
+  const totalHours = issues.reduce(
+    (sum, issue) => sum + (Number(issue.hoursWorked) || 0),
+    0,
+  );
+
+  const hoursByProperty = properties.map((property) => {
+    const propertyHours = issues
+      .filter((issue) => issue.propertyId === property.id)
+      .reduce((sum, issue) => sum + (Number(issue.hoursWorked) || 0), 0);
+    return { name: property.name, hours: Number(propertyHours.toFixed(2)) };
+  });
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
@@ -45,6 +57,27 @@ const Dashboard = ({ properties, issues }) => {
               <Typography variant="h5" component="div">
                 {totalIssues}
               </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Card>
+            <CardContent>
+              <Typography color="textSecondary" gutterBottom>
+                Total Hours Worked
+              </Typography>
+              <Typography variant="h5" component="div">
+                {totalHours.toFixed(2)}
+              </Typography>
+              {hoursByProperty.length > 0 && (
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  {hoursByProperty.map((item) => (
+                    <div key={item.name}>
+                      {item.name}: {item.hours.toFixed(2)}h
+                    </div>
+                  ))}
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>

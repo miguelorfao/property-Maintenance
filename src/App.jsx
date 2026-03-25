@@ -39,8 +39,17 @@ function App() {
   const [dbError, setDbError] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const calculateHoursWorked = (checkInTime, checkOutTime) => {
+    if (!checkInTime || !checkOutTime) return null;
+    const inTime = new Date(checkInTime);
+    const outTime = new Date(checkOutTime);
+    if (isNaN(inTime) || isNaN(outTime) || outTime <= inTime) return null;
+    const hours = (outTime - inTime) / (1000 * 60 * 60);
+    return Number(hours.toFixed(2));
+  };
+
   const muiTheme = useTheme();
-  const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -107,6 +116,9 @@ function App() {
             description: "Leaky faucet",
             status: "open",
             priority: "high",
+            checkInTime: "2026-03-25T08:00",
+            checkOutTime: "2026-03-25T09:30",
+            hoursWorked: 1.5,
           },
           {
             id: "sampleIssue2",
@@ -114,6 +126,9 @@ function App() {
             description: "Broken window",
             status: "in progress",
             priority: "medium",
+            checkInTime: "2026-03-25T10:00",
+            checkOutTime: "2026-03-25T11:45",
+            hoursWorked: 1.75,
           },
           {
             id: "sampleIssue3",
@@ -140,11 +155,18 @@ function App() {
 
   const addIssue = async (issue) => {
     try {
-      const docRef = await addDoc(collection(db, "issues"), {
+      const hoursWorked = calculateHoursWorked(
+        issue.checkInTime,
+        issue.checkOutTime,
+      );
+      const issueData = {
         ...issue,
         status: "open",
-      });
-      setIssues([...issues, { id: docRef.id, ...issue, status: "open" }]);
+        hoursWorked,
+      };
+
+      const docRef = await addDoc(collection(db, "issues"), issueData);
+      setIssues([...issues, { id: docRef.id, ...issueData }]);
     } catch (error) {
       console.error("Error adding issue:", error);
     }
@@ -202,22 +224,32 @@ function App() {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                  vertical: "top",
+                  horizontal: "right",
                 }}
                 keepMounted
                 transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                  vertical: "top",
+                  horizontal: "right",
                 }}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={() => handleMenuClick('dashboard')}>Dashboard</MenuItem>
-                <MenuItem onClick={() => handleMenuClick('properties')}>Properties</MenuItem>
-                <MenuItem onClick={() => handleMenuClick('issues')}>Issues</MenuItem>
-                <MenuItem onClick={() => handleMenuClick('addProperty')}>Add Property</MenuItem>
-                <MenuItem onClick={() => handleMenuClick('addIssue')}>Report Issue</MenuItem>
+                <MenuItem onClick={() => handleMenuClick("dashboard")}>
+                  Dashboard
+                </MenuItem>
+                <MenuItem onClick={() => handleMenuClick("properties")}>
+                  Properties
+                </MenuItem>
+                <MenuItem onClick={() => handleMenuClick("issues")}>
+                  Issues
+                </MenuItem>
+                <MenuItem onClick={() => handleMenuClick("addProperty")}>
+                  Add Property
+                </MenuItem>
+                <MenuItem onClick={() => handleMenuClick("addIssue")}>
+                  Report Issue
+                </MenuItem>
               </Menu>
             </>
           ) : (
