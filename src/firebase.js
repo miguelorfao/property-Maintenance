@@ -10,15 +10,15 @@ import { getFirestore } from "firebase/firestore";
 // 1. Go to https://console.firebase.google.com/
 // 2. Create a new project or select existing
 // 3. Go to Project settings > General > Your apps
-// 4. Add a web app and copy the config here
+// 4. Add a web app and copy the config to .env file
 const firebaseConfig = {
-  apiKey: "AIzaSyDmqD_9Dzkx8g97FlwCV-7OcY-r-OtQjzs",
-  authDomain: "property-a3aea.firebaseapp.com",
-  projectId: "property-a3aea",
-  storageBucket: "property-a3aea.firebasestorage.app",
-  messagingSenderId: "729582074514",
-  appId: "1:729582074514:web:285495261af252c789044b",
-  measurementId: "G-JBWZKCZKNG",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
