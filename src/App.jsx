@@ -45,6 +45,11 @@ import WeeklyReport from "./components/WeeklyReport.jsx";
 import Invoice from "./components/Invoice.jsx";
 
 function App() {
+  const restrictedIssueReporterEmails = [
+    "penny@gmail.com",
+    "caferoyal@gmail.com",
+    "anchor@gmail.com",
+  ];
   const [properties, setProperties] = useState([]);
   const [issues, setIssues] = useState([]);
   const [view, setView] = useState("dashboard");
@@ -62,6 +67,9 @@ function App() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const isAdmin = user?.email === "admin@gmail.com";
+  const isRestrictedIssueReporter = restrictedIssueReporterEmails.includes(
+    user?.email || "",
+  );
 
   // Check authentication state on mount
   useEffect(() => {
@@ -110,6 +118,17 @@ function App() {
   };
 
   const handleMenuClick = (newView) => {
+    if (
+      isRestrictedIssueReporter &&
+      !["issues", "addIssue"].includes(newView)
+    ) {
+      setErrorMessage(
+        "This account can only report issues and view the issues list.",
+      );
+      setAnchorEl(null);
+      return;
+    }
+
     if (newView === "addProperty" && !isAdmin) {
       setErrorMessage("Only admin@gmail.com can add properties.");
       setAnchorEl(null);
@@ -118,6 +137,12 @@ function App() {
     setView(newView);
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    if (isRestrictedIssueReporter && !["issues", "addIssue"].includes(view)) {
+      setView("issues");
+    }
+  }, [isRestrictedIssueReporter, view]);
 
   useEffect(() => {
     if (!user) {
@@ -412,16 +437,20 @@ function App() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={() => handleMenuClick("dashboard")}>
-                  Dashboard
-                </MenuItem>
-                <MenuItem onClick={() => handleMenuClick("properties")}>
-                  Properties
-                </MenuItem>
+                {!isRestrictedIssueReporter && (
+                  <MenuItem onClick={() => handleMenuClick("dashboard")}>
+                    Dashboard
+                  </MenuItem>
+                )}
+                {!isRestrictedIssueReporter && (
+                  <MenuItem onClick={() => handleMenuClick("properties")}>
+                    Properties
+                  </MenuItem>
+                )}
                 <MenuItem onClick={() => handleMenuClick("issues")}>
                   Issues
                 </MenuItem>
-                {isAdmin && (
+                {isAdmin && !isRestrictedIssueReporter && (
                   <MenuItem onClick={() => handleMenuClick("addProperty")}>
                     Add Property
                   </MenuItem>
@@ -429,10 +458,12 @@ function App() {
                 <MenuItem onClick={() => handleMenuClick("addIssue")}>
                   Report Issue
                 </MenuItem>
-                <MenuItem onClick={() => handleMenuClick("weeklyReport")}>
-                  Weekly Report
-                </MenuItem>
-                {isAdmin && (
+                {!isRestrictedIssueReporter && (
+                  <MenuItem onClick={() => handleMenuClick("weeklyReport")}>
+                    Weekly Report
+                  </MenuItem>
+                )}
+                {isAdmin && !isRestrictedIssueReporter && (
                   <MenuItem onClick={() => handleMenuClick("invoice")}>
                     Invoice
                   </MenuItem>
@@ -442,28 +473,34 @@ function App() {
             </>
           ) : (
             <>
-              <Button color="inherit" onClick={() => setView("dashboard")}>
-                Dashboard
-              </Button>
-              <Button color="inherit" onClick={() => setView("properties")}>
-                Properties
-              </Button>
+              {!isRestrictedIssueReporter && (
+                <Button color="inherit" onClick={() => handleMenuClick("dashboard")}>
+                  Dashboard
+                </Button>
+              )}
+              {!isRestrictedIssueReporter && (
+                <Button color="inherit" onClick={() => handleMenuClick("properties")}>
+                  Properties
+                </Button>
+              )}
               <Button color="inherit" onClick={() => setView("issues")}>
                 Issues
               </Button>
-              {isAdmin && (
-                <Button color="inherit" onClick={() => setView("addProperty")}>
+              {isAdmin && !isRestrictedIssueReporter && (
+                <Button color="inherit" onClick={() => handleMenuClick("addProperty")}>
                   Add Property
                 </Button>
               )}
-              <Button color="inherit" onClick={() => setView("addIssue")}>
+              <Button color="inherit" onClick={() => handleMenuClick("addIssue")}>
                 Report Issue
               </Button>
-              <Button color="inherit" onClick={() => setView("weeklyReport")}>
-                Weekly Report
-              </Button>
-              {isAdmin && (
-                <Button color="inherit" onClick={() => setView("invoice")}>
+              {!isRestrictedIssueReporter && (
+                <Button color="inherit" onClick={() => handleMenuClick("weeklyReport")}>
+                  Weekly Report
+                </Button>
+              )}
+              {isAdmin && !isRestrictedIssueReporter && (
+                <Button color="inherit" onClick={() => handleMenuClick("invoice")}>
                   Invoice
                 </Button>
               )}
@@ -512,6 +549,7 @@ function App() {
                 selectedPropertyId={selectedPropertyId}
                 onClearFilter={() => setSelectedPropertyId(null)}
                 currentUser={user}
+                readOnly={isRestrictedIssueReporter}
               />
             )}
             {view === "addProperty" && isAdmin && (

@@ -171,9 +171,6 @@ export const validatePropertyForm = (data) => {
   const typeValidation = validatePropertyType(data.type);
   if (!typeValidation.valid) errors.type = typeValidation.error;
 
-  const addressValidation = validateAddress(data.address);
-  if (!addressValidation.valid) errors.address = addressValidation.error;
-
   return {
     valid: Object.keys(errors).length === 0,
     errors,

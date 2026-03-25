@@ -170,7 +170,7 @@ const Invoice = ({ properties, issues, user }) => {
         />
       </Box>
       <Box ref={invoiceRef} sx={{ p: 2, backgroundColor: "#fff" }}>
-        <Box mb={2}>
+        <Box mb={2} textAlign={"center"}>
           <Typography variant="h5" fontWeight="bold">
             {companyName}
           </Typography>

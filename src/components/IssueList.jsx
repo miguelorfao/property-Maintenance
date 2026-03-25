@@ -24,6 +24,7 @@ const IssueList = ({
   selectedPropertyId,
   onClearFilter,
   currentUser,
+  readOnly = false,
 }) => {
   const [tab, setTab] = useState("open");
 
@@ -144,6 +145,7 @@ const IssueList = ({
                     <FormControl size="small" sx={{ minWidth: 120 }}>
                       <Select
                         value={issue.status}
+                        disabled={readOnly}
                         onChange={(e) =>
                           onUpdateStatus(issue.id, e.target.value)
                         }
@@ -157,12 +159,18 @@ const IssueList = ({
                     <IconButton
                       edge="end"
                       aria-label="delete issue"
+                      disabled={readOnly}
                       onClick={() => onDelete(issue.id)}
                       title="Delete issue"
                     >
                       <DeleteIcon />
                     </IconButton>
                   </Box>
+                  {readOnly && (
+                    <Typography variant="caption" color="text.secondary">
+                      This account can view issues only and cannot change them.
+                    </Typography>
+                  )}
                 </ListItem>
               );
             })(),

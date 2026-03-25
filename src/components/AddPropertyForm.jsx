@@ -15,7 +15,6 @@ import { validatePropertyForm, sanitizeInput } from "../utils/validation";
 const AddPropertyForm = ({ onAdd, onCancel }) => {
   const [name, setName] = useState("");
   const [type, setType] = useState("flat");
-  const [address, setAddress] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +23,7 @@ const AddPropertyForm = ({ onAdd, onCancel }) => {
     setErrors({});
 
     // Validate form
-    const validation = validatePropertyForm({ name, type, address });
+    const validation = validatePropertyForm({ name, type });
     if (!validation.valid) {
       setErrors(validation.errors);
       return;
@@ -35,11 +34,9 @@ const AddPropertyForm = ({ onAdd, onCancel }) => {
       onAdd({
         name: sanitizeInput(name),
         type,
-        address: sanitizeInput(address),
       });
       setName("");
       setType("flat");
-      setAddress("");
     } finally {
       setLoading(false);
     }
@@ -71,19 +68,6 @@ const AddPropertyForm = ({ onAdd, onCancel }) => {
         error={!!errors.name}
         helperText={errors.name}
         disabled={loading}
-      />
-      <TextField
-        fullWidth
-        label="Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        margin="normal"
-        required
-        error={!!errors.address}
-        helperText={errors.address}
-        disabled={loading}
-        multiline
-        rows={2}
       />
       <FormControl fullWidth margin="normal" disabled={loading}>
         <InputLabel>Type</InputLabel>
