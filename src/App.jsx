@@ -29,6 +29,7 @@ import IssueList from "./components/IssueList.jsx";
 import AddPropertyForm from "./components/AddPropertyForm.jsx";
 import AddIssueForm from "./components/AddIssueForm.jsx";
 import Dashboard from "./components/Dashboard.jsx";
+import WeeklyReport from "./components/WeeklyReport.jsx";
 
 const theme = createTheme();
 
@@ -38,6 +39,12 @@ function App() {
   const [view, setView] = useState("dashboard");
   const [dbError, setDbError] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+
+  const onPropertyClick = (propertyId) => {
+    setSelectedPropertyId(propertyId);
+    setView("issues");
+  };
 
   const calculateHoursWorked = (checkInTime, checkOutTime) => {
     if (!checkInTime || !checkOutTime) return null;
@@ -295,6 +302,9 @@ function App() {
                 <MenuItem onClick={() => handleMenuClick("addIssue")}>
                   Report Issue
                 </MenuItem>
+                <MenuItem onClick={() => handleMenuClick("weeklyReport")}>
+                  Weekly Report
+                </MenuItem>
               </Menu>
             </>
           ) : (
@@ -314,13 +324,20 @@ function App() {
               <Button color="inherit" onClick={() => setView("addIssue")}>
                 Report Issue
               </Button>
+              <Button color="inherit" onClick={() => setView("weeklyReport")}>
+                Weekly Report
+              </Button>
             </>
           )}
         </Toolbar>
       </AppBar>
       <Container maxWidth="lg" sx={{ mt: 4 }}>
         {view === "dashboard" && (
-          <Dashboard properties={properties} issues={issues} />
+          <Dashboard
+            properties={properties}
+            issues={issues}
+            onPropertyClick={onPropertyClick}
+          />
         )}
         {view === "properties" && (
           <PropertyList properties={properties} onDelete={deleteProperty} />
@@ -331,6 +348,8 @@ function App() {
             properties={properties}
             onUpdateStatus={updateIssueStatus}
             onDelete={deleteIssue}
+            selectedPropertyId={selectedPropertyId}
+            onClearFilter={() => setSelectedPropertyId(null)}
           />
         )}
         {view === "addProperty" && (
@@ -344,6 +363,13 @@ function App() {
             properties={properties}
             onAdd={addIssue}
             onCancel={() => setView("issues")}
+          />
+        )}
+        {view === "weeklyReport" && (
+          <WeeklyReport
+            properties={properties}
+            issues={issues}
+            onPropertyClick={onPropertyClick}
           />
         )}
       </Container>

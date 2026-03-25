@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Card, CardContent, Typography, Box } from "@mui/material";
 
-const Dashboard = ({ properties, issues }) => {
+const Dashboard = ({ properties, issues, onPropertyClick }) => {
   const totalProperties = properties.length;
   const totalIssues = issues.length;
   const openIssues = issues.filter((issue) => issue.status === "open").length;
@@ -20,12 +20,40 @@ const Dashboard = ({ properties, issues }) => {
     0,
   );
 
+  const getWeekStart = (date) => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday start
+    return new Date(d.setDate(diff));
+  };
+
+  const now = new Date();
+  const weekStart = getWeekStart(now);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 7);
+
   const hoursByProperty = properties.map((property) => {
     const propertyHours = issues
       .filter((issue) => issue.propertyId === property.id)
       .reduce((sum, issue) => sum + (Number(issue.hoursWorked) || 0), 0);
     return { name: property.name, hours: Number(propertyHours.toFixed(2)) };
   });
+
+  const weeklyHoursByProperty = properties.map((property) => {
+    const propertyHours = issues
+      .filter((issue) => issue.propertyId === property.id && issue.checkOutTime)
+      .filter((issue) => {
+        const out = new Date(issue.checkOutTime);
+        return out >= weekStart && out < weekEnd;
+      })
+      .reduce((sum, issue) => sum + (Number(issue.hoursWorked) || 0), 0);
+    return { name: property.name, hours: Number(propertyHours.toFixed(2)) };
+  });
+
+  const totalWeeklyHours = weeklyHoursByProperty.reduce(
+    (sum, item) => sum + item.hours,
+    0,
+  );
 
   return (
     <Box>
@@ -71,11 +99,64 @@ const Dashboard = ({ properties, issues }) => {
               </Typography>
               {hoursByProperty.length > 0 && (
                 <Typography variant="body2" sx={{ mt: 1 }}>
-                  {hoursByProperty.map((item) => (
-                    <div key={item.name}>
-                      {item.name}: {item.hours.toFixed(2)}h
-                    </div>
-                  ))}
+                  {hoursByProperty.map((item) => {
+                    const property = properties.find(
+                      (p) => p.name === item.name,
+                    );
+                    return (
+                      <div key={item.name}>
+                        <Typography
+                          component="span"
+                          sx={{
+                            cursor: "pointer",
+                            color: "primary.main",
+                            "&:hover": { textDecoration: "underline" },
+                          }}
+                          onClick={() => onPropertyClick(property.id)}
+                        >
+                          {item.name}
+                        </Typography>
+                        : {item.hours.toFixed(2)}h
+                      </div>
+                    );
+                  })}
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Card>
+            <CardContent>
+              <Typography color="textSecondary" gutterBottom>
+                Weekly Hours (all locations)
+              </Typography>
+              <Typography variant="h5" component="div">
+                {totalWeeklyHours.toFixed(2)}
+              </Typography>
+              {weeklyHoursByProperty.length > 0 && (
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  {weeklyHoursByProperty.map((item) => {
+                    const property = properties.find(
+                      (p) => p.name === item.name,
+                    );
+                    return (
+                      <div key={item.name}>
+                        <Typography
+                          component="span"
+                          sx={{
+                            cursor: "pointer",
+                            color: "primary.main",
+                            "&:hover": { textDecoration: "underline" },
+                          }}
+                          onClick={() => onPropertyClick(property.id)}
+                        >
+                          {item.name}
+                        </Typography>
+                        : {item.hours.toFixed(2)}h
+                      </div>
+                    );
+                  })}
                 </Typography>
               )}
             </CardContent>

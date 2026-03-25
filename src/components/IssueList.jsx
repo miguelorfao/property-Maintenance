@@ -10,10 +10,18 @@ import {
   MenuItem,
   FormControl,
   IconButton,
+  Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const IssueList = ({ issues, properties, onUpdateStatus, onDelete }) => {
+const IssueList = ({
+  issues,
+  properties,
+  onUpdateStatus,
+  onDelete,
+  selectedPropertyId,
+  onClearFilter,
+}) => {
   const getPropertyName = (id) =>
     properties.find((p) => p.id === id)?.name || "Unknown";
 
@@ -36,13 +44,27 @@ const IssueList = ({ issues, properties, onUpdateStatus, onDelete }) => {
     }
   };
 
+  const filteredIssues = selectedPropertyId
+    ? issues.filter((issue) => issue.propertyId === selectedPropertyId)
+    : issues;
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
         Maintenance Issues
+        {selectedPropertyId && (
+          <Typography variant="subtitle1" component="span" sx={{ ml: 2 }}>
+            for {getPropertyName(selectedPropertyId)}
+          </Typography>
+        )}
       </Typography>
+      {selectedPropertyId && (
+        <Button onClick={onClearFilter} variant="outlined" sx={{ mb: 2 }}>
+          Show All Issues
+        </Button>
+      )}
       <List>
-        {issues.map((issue) => (
+        {filteredIssues.map((issue) => (
           <ListItem key={issue.id} divider>
             <ListItemText
               primary={issue.description}
