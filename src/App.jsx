@@ -134,6 +134,13 @@ function App() {
       setAnchorEl(null);
       return;
     }
+
+    if (newView === "weeklyReport" && !isAdmin) {
+      setErrorMessage("Only admin@gmail.com can view weekly reports.");
+      setAnchorEl(null);
+      return;
+    }
+
     setView(newView);
     setAnchorEl(null);
   };
@@ -458,7 +465,7 @@ function App() {
                 <MenuItem onClick={() => handleMenuClick("addIssue")}>
                   Report Issue
                 </MenuItem>
-                {!isRestrictedIssueReporter && (
+                {isAdmin && !isRestrictedIssueReporter && (
                   <MenuItem onClick={() => handleMenuClick("weeklyReport")}>
                     Weekly Report
                   </MenuItem>
@@ -474,12 +481,18 @@ function App() {
           ) : (
             <>
               {!isRestrictedIssueReporter && (
-                <Button color="inherit" onClick={() => handleMenuClick("dashboard")}>
+                <Button
+                  color="inherit"
+                  onClick={() => handleMenuClick("dashboard")}
+                >
                   Dashboard
                 </Button>
               )}
               {!isRestrictedIssueReporter && (
-                <Button color="inherit" onClick={() => handleMenuClick("properties")}>
+                <Button
+                  color="inherit"
+                  onClick={() => handleMenuClick("properties")}
+                >
                   Properties
                 </Button>
               )}
@@ -487,20 +500,32 @@ function App() {
                 Issues
               </Button>
               {isAdmin && !isRestrictedIssueReporter && (
-                <Button color="inherit" onClick={() => handleMenuClick("addProperty")}>
+                <Button
+                  color="inherit"
+                  onClick={() => handleMenuClick("addProperty")}
+                >
                   Add Property
                 </Button>
               )}
-              <Button color="inherit" onClick={() => handleMenuClick("addIssue")}>
+              <Button
+                color="inherit"
+                onClick={() => handleMenuClick("addIssue")}
+              >
                 Report Issue
               </Button>
-              {!isRestrictedIssueReporter && (
-                <Button color="inherit" onClick={() => handleMenuClick("weeklyReport")}>
+              {isAdmin && !isRestrictedIssueReporter && (
+                <Button
+                  color="inherit"
+                  onClick={() => handleMenuClick("weeklyReport")}
+                >
                   Weekly Report
                 </Button>
               )}
               {isAdmin && !isRestrictedIssueReporter && (
-                <Button color="inherit" onClick={() => handleMenuClick("invoice")}>
+                <Button
+                  color="inherit"
+                  onClick={() => handleMenuClick("invoice")}
+                >
                   Invoice
                 </Button>
               )}
@@ -570,12 +595,17 @@ function App() {
                 onCancel={() => setView("issues")}
               />
             )}
-            {view === "weeklyReport" && (
+            {view === "weeklyReport" && isAdmin && (
               <WeeklyReport
                 properties={properties}
                 issues={issues}
                 onPropertyClick={onPropertyClick}
               />
+            )}
+            {view === "weeklyReport" && !isAdmin && (
+              <Alert severity="warning">
+                Only admin@gmail.com can view weekly reports.
+              </Alert>
             )}
             {view === "invoice" && isAdmin && (
               <Invoice properties={properties} issues={issues} user={user} />
