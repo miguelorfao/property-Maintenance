@@ -31,12 +31,14 @@ A React-based application for managing maintenance of holiday flats and shops. B
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/miguelorfao/property-Maintenance.git
 cd property-Maintenance
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -47,6 +49,7 @@ npm install
    - Copy your Firebase config to `src/firebase.js`
 
 4. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -80,6 +83,7 @@ src/
 The app can be deployed to any static hosting service like Vercel, Netlify, or GitHub Pages.
 
 To build for production:
+
 ```bash
 npm run build
 ```

@@ -14,17 +14,13 @@ const AddIssueForm = ({ properties, onAdd, onCancel }) => {
   const [propertyId, setPropertyId] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
-  const [checkInTime, setCheckInTime] = useState("");
-  const [checkOutTime, setCheckOutTime] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onAdd({ propertyId, description, priority, checkInTime, checkOutTime });
+    onAdd({ propertyId, description, priority });
     setPropertyId("");
     setDescription("");
     setPriority("medium");
-    setCheckInTime("");
-    setCheckOutTime("");
   };
 
   return (
@@ -68,24 +64,6 @@ const AddIssueForm = ({ properties, onAdd, onCancel }) => {
           <MenuItem value="high">High</MenuItem>
         </Select>
       </FormControl>
-      <TextField
-        fullWidth
-        type="datetime-local"
-        label="Check-in Time"
-        value={checkInTime}
-        onChange={(e) => setCheckInTime(e.target.value)}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-      />
-      <TextField
-        fullWidth
-        type="datetime-local"
-        label="Check-out Time"
-        value={checkOutTime}
-        onChange={(e) => setCheckOutTime(e.target.value)}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-      />
       <Box sx={{ mt: 2 }}>
         <Button type="submit" variant="contained" sx={{ mr: 1 }}>
           Report Issue
