@@ -13,13 +13,11 @@ import {
 const AddPropertyForm = ({ onAdd, onCancel }) => {
   const [name, setName] = useState("");
   const [type, setType] = useState("flat");
-  const [address, setAddress] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onAdd({ name, type, address });
+    onAdd({ name, type });
     setName("");
-    setAddress("");
     setType("flat");
   };
 
@@ -47,14 +45,6 @@ const AddPropertyForm = ({ onAdd, onCancel }) => {
           <MenuItem value="shop">Shop</MenuItem>
         </Select>
       </FormControl>
-      <TextField
-        fullWidth
-        label="Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        margin="normal"
-        required
-      />
       <Box sx={{ mt: 2 }}>
         <Button type="submit" variant="contained" sx={{ mr: 1 }}>
           Add Property
