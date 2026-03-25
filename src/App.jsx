@@ -172,11 +172,56 @@ function App() {
     }
   };
 
-  const updateIssueStatus = async (id, status) => {
+  const updateIssueStatus = async (id, newStatus) => {
     try {
-      await updateDoc(doc(db, "issues", id), { status });
+      const now = new Date().toISOString();
+
+      const issueToUpdate = issues.find((issue) => issue.id === id);
+      if (!issueToUpdate) return;
+
+      let checkInTime = issueToUpdate.checkInTime;
+      let checkOutTime = issueToUpdate.checkOutTime;
+      let hoursWorked = issueToUpdate.hoursWorked;
+
+      const updateData = { status: newStatus };
+
+      if (newStatus === "in progress" && !checkInTime) {
+        checkInTime = now;
+        updateData.checkInTime = checkInTime;
+      }
+
+      if (newStatus === "closed") {
+        if (!checkInTime) {
+          // If no check-in exists for closed, set check-in to now as a fallback
+          checkInTime = now;
+          updateData.checkInTime = checkInTime;
+        }
+        if (!checkOutTime) {
+          checkOutTime = now;
+          updateData.checkOutTime = checkOutTime;
+        }
+
+        const computedHours = calculateHoursWorked(checkInTime, checkOutTime);
+        if (computedHours != null) {
+          hoursWorked = computedHours;
+          updateData.hoursWorked = hoursWorked;
+        }
+      }
+
+      await updateDoc(doc(db, "issues", id), updateData);
+
       setIssues(
-        issues.map((issue) => (issue.id === id ? { ...issue, status } : issue)),
+        issues.map((issue) =>
+          issue.id === id
+            ? {
+                ...issue,
+                status: newStatus,
+                checkInTime,
+                checkOutTime,
+                hoursWorked,
+              }
+            : issue,
+        ),
       );
     } catch (error) {
       console.error("Error updating issue:", error);
