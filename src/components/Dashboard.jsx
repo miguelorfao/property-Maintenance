@@ -5,8 +5,8 @@ const Dashboard = ({ properties, issues, onPropertyClick }) => {
   const totalProperties = properties.length;
   const totalIssues = issues.length;
   const openIssues = issues.filter((issue) => issue.status === "open").length;
-  const inProgressIssues = issues.filter(
-    (issue) => issue.status === "in progress",
+  const pendingIssues = issues.filter(
+    (issue) => issue.status === "pending",
   ).length;
   const closedIssues = issues.filter(
     (issue) => issue.status === "closed",
@@ -178,10 +178,10 @@ const Dashboard = ({ properties, issues, onPropertyClick }) => {
           <Card>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
-                In Progress
+                Pending
               </Typography>
               <Typography variant="h5" component="div">
-                {inProgressIssues}
+                {pendingIssues}
               </Typography>
             </CardContent>
           </Card>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   List,
   ListItem,
@@ -11,6 +11,8 @@ import {
   FormControl,
   IconButton,
   Button,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -21,9 +23,18 @@ const IssueList = ({
   onDelete,
   selectedPropertyId,
   onClearFilter,
+  currentUser,
 }) => {
+  const [tab, setTab] = useState("open");
+
   const getPropertyName = (id) =>
     properties.find((p) => p.id === id)?.name || "Unknown";
+
+  const getRecordedByName = (issue) => {
+    if (issue.username) return issue.username;
+    if (issue.userEmail) return issue.userEmail.split("@")[0];
+    return issue.userId || "Unknown";
+  };
 
   const formatDateTime = (dateTime) => {
     if (!dateTime) return "-";
@@ -35,7 +46,7 @@ const IssueList = ({
     switch (status) {
       case "open":
         return "error";
-      case "in progress":
+      case "pending":
         return "warning";
       case "closed":
         return "success";
@@ -44,9 +55,16 @@ const IssueList = ({
     }
   };
 
-  const filteredIssues = selectedPropertyId
+  const filteredByProperty = selectedPropertyId
     ? issues.filter((issue) => issue.propertyId === selectedPropertyId)
     : issues;
+  const filteredIssues = filteredByProperty.filter(
+    (issue) => issue.status === tab,
+  );
+
+  const handleTabChange = (event, newValue) => {
+    setTab(newValue);
+  };
 
   return (
     <Box>
@@ -54,7 +72,7 @@ const IssueList = ({
         Maintenance Issues
         {selectedPropertyId && (
           <Typography variant="subtitle1" component="span" sx={{ ml: 2 }}>
-            for {getPropertyName(selectedPropertyId)}
+            for {getPropertyName(selectedPropertyId)} ({filteredIssues.length})
           </Typography>
         )}
       </Typography>
@@ -63,49 +81,94 @@ const IssueList = ({
           Show All Issues
         </Button>
       )}
-      <List>
-        {filteredIssues.map((issue) => (
-          <ListItem key={issue.id} divider>
-            <ListItemText
-              primary={issue.description}
-              secondary={
-                <>
-                  <div>
-                    Property: {getPropertyName(issue.propertyId)} - Priority:{" "}
-                    {issue.priority}
-                  </div>
-                  <div>
-                    Check-in: {formatDateTime(issue.checkInTime)} | Check-out:{" "}
-                    {formatDateTime(issue.checkOutTime)}
-                  </div>
-                  <div>
-                    Hours Worked:{" "}
-                    {issue.hoursWorked != null ? issue.hoursWorked : "-"}
-                  </div>
-                </>
-              }
-            />
-            <Chip label={issue.status} color={getStatusColor(issue.status)} />
-            <FormControl size="small" sx={{ ml: 2, minWidth: 120 }}>
-              <Select
-                value={issue.status}
-                onChange={(e) => onUpdateStatus(issue.id, e.target.value)}
-              >
-                <MenuItem value="open">Open</MenuItem>
-                <MenuItem value="in progress">In Progress</MenuItem>
-                <MenuItem value="closed">Closed</MenuItem>
-              </Select>
-            </FormControl>
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              onClick={() => onDelete(issue.id)}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </ListItem>
-        ))}
-      </List>
+      <Tabs value={tab} onChange={handleTabChange} sx={{ mb: 2 }}>
+        <Tab
+          label={`Open (${issues.filter((i) => i.status === "open").length})`}
+          value="open"
+        />
+        <Tab
+          label={`Pending (${issues.filter((i) => i.status === "pending").length})`}
+          value="pending"
+        />
+        <Tab
+          label={`Closed (${issues.filter((i) => i.status === "closed").length})`}
+          value="closed"
+        />
+      </Tabs>
+      {filteredIssues.length === 0 ? (
+        <Typography color="textSecondary">No {tab} issues.</Typography>
+      ) : (
+        <List>
+          {filteredIssues.map((issue) =>
+            (() => {
+              return (
+                <ListItem
+                  key={issue.id}
+                  divider
+                  sx={{
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    pb: 2,
+                  }}
+                >
+                  <Box sx={{ display: "flex", width: "100%", mb: 1 }}>
+                    <ListItemText
+                      primary={issue.description}
+                      secondary={
+                        <>
+                          <div>
+                            Property: {getPropertyName(issue.propertyId)}
+                          </div>
+                          <div>Priority: {issue.priority}</div>
+                          <div>
+                            Check-in: {formatDateTime(issue.checkInTime)} |
+                            Check-out: {formatDateTime(issue.checkOutTime)}
+                          </div>
+                          <div>
+                            Hours Worked:{" "}
+                            {issue.hoursWorked != null
+                              ? issue.hoursWorked
+                              : "-"}
+                          </div>
+                          <div>Recorded by: {getRecordedByName(issue)}</div>
+                        </>
+                      }
+                      sx={{ flex: 1 }}
+                    />
+                    <Chip
+                      label={issue.status}
+                      color={getStatusColor(issue.status)}
+                    />
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <FormControl size="small" sx={{ minWidth: 120 }}>
+                      <Select
+                        value={issue.status}
+                        onChange={(e) =>
+                          onUpdateStatus(issue.id, e.target.value)
+                        }
+                        aria-label="Update issue status"
+                      >
+                        <MenuItem value="open">Open</MenuItem>
+                        <MenuItem value="pending">Pending</MenuItem>
+                        <MenuItem value="closed">Closed</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <IconButton
+                      edge="end"
+                      aria-label="delete issue"
+                      onClick={() => onDelete(issue.id)}
+                      title="Delete issue"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </ListItem>
+              );
+            })(),
+          )}
+        </List>
+      )}
     </Box>
   );
 };
